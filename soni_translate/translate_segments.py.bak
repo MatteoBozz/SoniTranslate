@@ -207,11 +207,8 @@ def call_gpt_translate(
     response = client.chat.completions.create(
         model=model,
         response_format={"type": "json_object"},
-        #messages=[
-        #  {"role": "system", "content": system_prompt},
-        #  {"role": "user", "content": user_prompt}
-        #]
         messages=[
+          {"role": "system", "content": system_prompt},
           {"role": "user", "content": user_prompt}
         ]
     )
@@ -219,23 +216,15 @@ def call_gpt_translate(
     logger.debug(f"Result: {str(result)}")
 
     try:
-        #translation = json.loads(result)
-        translation = result.strip()
-        # tolerate an empty JSON object {} — fall back to the source text for this segment
-        if isinstance(translation, dict) and not translation:
-            translation = user_prompt
+        translation = json.loads(result)
     except Exception as error:
         match_result = re.search(r'\{.*?\}', result)
         if match_result:
             logger.error(str(error))
             json_str = match_result.group(0)
             translation = json.loads(json_str)
-            if isinstance(translation, dict) and not translation:
-                translation = user_prompt
         else:
-            # nothing parseable at all — keep the source text, don't crash the run
-            logger.error(f"Unparseable translation, keeping source: {str(error)}")
-            translation = user_prompt
+            raise error
 
     # Get valid data
     if batch_lines:
@@ -266,24 +255,17 @@ def call_gpt_translate(
         return fix_conversation_length
 
     else:
-        # Unwrap whatever shape the model returned (dict / nested list / set / str)
-        # down to the first string; never crash the run on an odd shape.
-        def _first_str(x, _depth=0):
-            if _depth > 10:
-                return ""
-            if isinstance(x, str):
-                return x
-            if isinstance(x, dict):
-                vals = list(x.values())
-                return _first_str(vals[0], _depth + 1) if vals else ""
-            if isinstance(x, (list, tuple, set)):
-                items = list(x)
-                return _first_str(items[0], _depth + 1) if items else ""
-            return str(x) if x is not None else ""
-
-        translation = _first_str(translation) or user_prompt
+        if isinstance(translation, dict):
+            translation = list(translation.values())[0]
+        if isinstance(translation, list):
+            translation = translation[0]
+        if isinstance(translation, set):
+            translation = list(translation)[0]
+        if not isinstance(translation, str):
+            raise ValueError(f"No valid response received: {str(translation)}")
 
         return translation
+
 
 def gpt_sequential(segments, model, target, source=None):
     from openai import OpenAI
@@ -301,24 +283,12 @@ def gpt_sequential(segments, model, target, source=None):
     fixed_target = fix_code_language(target)
     fixed_source = fix_code_language(source) if source else "auto"
 
-    #system_prompt = "Machine translation designed to output the translated_text JSON."
-    #system_prompt = "You are a professional English (en) to Italian (it) translator. Your goal is to accurately convey the meaning and nuances of the original English text while adhering to Italian grammar, vocabulary, and cultural sensitivities.\nProduce only the Italian translation, without any additional explanations or commentary. Please translate the following English text into Italian:\n\n\n{TEXT}"
-    system_prompt = ""
+    system_prompt = "Machine translation designed to output the translated_text JSON."
 
     for i, line in enumerate(translated_segments):
         text = line["text"].strip()
         start = line["start"]
-        #user_prompt = f"Translate the following {lang_sc} text into {lang_tg}, write the fully translated text and nothing more:\n{text}"
-        #user_prompt = f"You are a professional English (en) to Italian (it) translator. Your goal is to accurately convey the meaning and nuances of the original English text while adhering to Italian grammar, vocabulary, and cultural sensitivities. Produce only the Italian translation, without any additional explanations or commentary.\n\nPlease translate the following English text into Italian:\n\n\n{text}"
-        #user_prompt = f"{text}"
-        user_prompt = (
-            "You are a professional English (en) to Italian (it) translator. "
-            "Your goal is to accurately convey the meaning and nuances of the original English text "
-            "while adhering to Italian grammar, vocabulary, and cultural sensitivities. "
-            "Produce only the Italian translation, without any additional explanations or commentary. "
-            "Please translate the following English text into Italian:\n\n\n"
-            f"{text}"
-        )
+        user_prompt = f"Translate the following {lang_sc} text into {lang_tg}, write the fully translated text and nothing more:\n{text}"
 
         time.sleep(0.5)
 
