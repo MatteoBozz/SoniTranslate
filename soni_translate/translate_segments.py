@@ -213,7 +213,7 @@ def call_gpt_translate(
         ]
     )
     result = response.choices[0].message.content
-    logger.info(f"Response: {str(Response)}")
+    logger.info(f"Response: {str(Response)} ---END")
     logger.debug(f"Result: {str(result)}")
 
     try:
