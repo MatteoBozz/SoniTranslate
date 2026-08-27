@@ -302,8 +302,8 @@ def gpt_sequential(segments, model, target, source=None):
     fixed_source = fix_code_language(source) if source else "auto"
 
     #system_prompt = "Machine translation designed to output the translated_text JSON."
-    #system_prompt = "You are a professional English (en) to Italian (it) translator. Your goal is to accurately convey the meaning and nuances of the original English text while adhering to Italian grammar, vocabulary, and cultural sensitivities.\nProduce only the Italian translation, without any additional explanations or commentary. Please translate the following English text into Italian:\n\n\n{TEXT}"
-    system_prompt = ""
+    #system_prompt = "You are a professional English (en) to Italian (it) translator. Your goal is to accurately convey the meaning and nuances of the original English text while adhering to Italian grammar, vocabulary, and cultural sensitivities.\nProduce only the Italian translation, without any additional explanations or commentary. Please translate the following English text into Italian:\n\n\n"
+    system_prompt = "You are a professional English (en) to Italian (it) translator. Your goal is to accurately convey the meaning and nuances of the original English text while adhering to Italian grammar, vocabulary, and cultural sensitivities. Produce only on single Italian translation, without any additional explanations, commentary or alternative translations."
 
     for i, line in enumerate(translated_segments):
         text = line["text"].strip()
@@ -311,14 +311,15 @@ def gpt_sequential(segments, model, target, source=None):
         #user_prompt = f"Translate the following {lang_sc} text into {lang_tg}, write the fully translated text and nothing more:\n{text}"
         #user_prompt = f"You are a professional English (en) to Italian (it) translator. Your goal is to accurately convey the meaning and nuances of the original English text while adhering to Italian grammar, vocabulary, and cultural sensitivities. Produce only the Italian translation, without any additional explanations or commentary.\n\nPlease translate the following English text into Italian:\n\n\n{text}"
         #user_prompt = f"{text}"
-        user_prompt = (
-            "You are a professional English (en) to Italian (it) translator. "
-            "Your goal is to accurately convey the meaning and nuances of the original English text "
-            "while adhering to Italian grammar, vocabulary, and cultural sensitivities. "
-            "Produce only the Italian translation, without any additional explanations or commentary. "
-            "Please translate the following English text into Italian:\n\n\n"
-            f"{text}"
-        )
+        #user_prompt = (
+        #    "You are a professional English (en) to Italian (it) translator. "
+        #    "Your goal is to accurately convey the meaning and nuances of the original English text "
+        #    "while adhering to Italian grammar, vocabulary, and cultural sensitivities. "
+        #    "Produce only the Italian translation, without any additional explanations or commentary. "
+        #    "Please translate the following English text into Italian:\n\n\n"
+        #    f"{text}"
+        #)
+        user_prompt = f"Please translate the following English text into Italian:\n\n\n{text}"
 
         time.sleep(0.5)
 
@@ -329,6 +330,7 @@ def gpt_sequential(segments, model, target, source=None):
                 system_prompt,
                 user_prompt,
             )
+            logger.info(f"{translated_text}")
 
         except Exception as error:
             logger.error(
