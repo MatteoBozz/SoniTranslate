@@ -207,11 +207,8 @@ def call_gpt_translate(
     response = client.chat.completions.create(
         model=model,
         response_format={"type": "json_object"},
-        #messages=[
-        #  {"role": "system", "content": system_prompt},
-        #  {"role": "user", "content": user_prompt}
-        #]
         messages=[
+          {"role": "system", "content": system_prompt},
           {"role": "user", "content": user_prompt}
         ]
     )
@@ -220,7 +217,8 @@ def call_gpt_translate(
 
     try:
         #translation = json.loads(result)
-        translation = result.strip()
+        #translation = result.strip()
+        translation = json.loads(result).get('choices', [{}])[0].get('message', {}).get('content')
         # tolerate an empty JSON object {} — fall back to the source text for this segment
         if isinstance(translation, dict) and not translation:
             translation = user_prompt
