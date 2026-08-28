@@ -7,6 +7,8 @@ from .logging_setup import logger
 import re
 import json
 import time
+import urllib.error
+import urllib.request
 
 TRANSLATION_PROCESS_OPTIONS = [
     "google_translator_batch",
