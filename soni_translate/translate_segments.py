@@ -199,6 +199,7 @@ def call_ollama_generate(
     model,
     original_text 
 ):
+    url = "http://192.168.178.210:11434/api/generate"
     payload = json.dumps({
         "model": model,
         "prompt": original_text,
