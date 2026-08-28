@@ -368,7 +368,7 @@ def gpt_sequential(segments, model, target, source=None):
             #    system_prompt,
             #    user_prompt,
             #)
-            call_ollama_generate(
+            translated_text = call_ollama_generate(
                 model,
                 text
             )
