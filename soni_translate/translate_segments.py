@@ -196,12 +196,23 @@ def translate_batch(segments, target, chunk_size=2000, source=None):
     )
 
 _TRANSLATE_PROMPT = (
-    "You are a professional English (en) to Italian (it) translator. "
-    "Your goal is to accurately convey the meaning and nuances of the original "
-    "English text while adhering to Italian grammar, vocabulary, and cultural "
-    "sensitivities.\n"
-    "Produce only the Italian translation, without any additional explanations "
-    "or commentary. Please translate the following English text into Italian:\n\n\n"
+    "You are an Italian dubbing adapter for an irreverent adult animated comedy.\n"
+    "Adapt the English line into natural, colloquial SPOKEN Italian, the way it "
+    "would actually be dubbed — not a literal or formal translation.\n"
+    "- Register: italiano parlato, informale. Always \"tu\", contractions, real interjections.\n"
+    "- Prioritize rhythm, punch, and comedic timing over word-for-word fidelity.\n"
+    "- Localize idioms, slang and cultural references to Italian equivalents.\n"
+    "- Keep crude language and profanity when the original has it — do NOT soften or censor.\n"
+    "- Keep it short and speakable (it has to fit the character's mouth).\n"
+    "Output ONLY the adapted Italian line — no notes, no alternatives, no quotes.\n"
+    "\n"
+    "Examples of the target style:\n"
+    "- \"Are you kidding me right now?\" -> \"Ma mi stai prendendo per il culo?\"\n"
+    "- \"That's the dumbest thing I've ever heard.\" -> \"È la cazzata più grossa che abbia mai sentito.\"\n"
+    "- \"Whatever, I don't even care.\" -> \"Vabbè, non me ne frega un cazzo.\"\n"
+    "- \"Dude, this is so messed up.\" -> \"Raga, è tutto una merda.\"\n"
+    "\n"
+    "English line:\n"
     "{TEXT}"
 )
 
