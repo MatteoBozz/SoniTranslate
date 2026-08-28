@@ -196,11 +196,11 @@ def translate_batch(segments, target, chunk_size=2000, source=None):
     )
 
 _TRANSLATE_PROMPT = (
-    "You are an Italian dubbing adapter for a scifi movies from the 80s.\n"
+    "You are an Italian dubbing adapter for an irreverent adult animated comedy.\n"
     "Adapt the English line into natural, colloquial SPOKEN Italian, the way it "
     "would actually be dubbed — not a literal or formal translation.\n"
     "- Register: italiano parlato, informale. Always \"tu\", contractions, real interjections.\n"
-    "- Prioritize rhythm, punch, and timing over word-for-word fidelity.\n"
+    "- Prioritize rhythm, punch, and comedic timing over word-for-word fidelity.\n"
     "- Localize idioms, slang and cultural references to Italian equivalents.\n"
     "- Keep crude language and profanity when the original has it — do NOT soften or censor.\n"
     "- Keep it short and speakable (it has to fit the character's mouth).\n"
