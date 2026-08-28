@@ -211,6 +211,7 @@ _TRANSLATE_PROMPT = (
     "- \"That's the dumbest thing I've ever heard.\" -> \"È la cazzata più grossa che abbia mai sentito.\"\n"
     "- \"Whatever, I don't even care.\" -> \"Vabbè, non me ne frega un cazzo.\"\n"
     "- \"Dude, this is so messed up.\" -> \"Raga, è tutto una merda.\"\n"
+    "- \"Wow, that's cool!.\" -> \"Wow fico!\"\n"
     "\n"
     "English line:\n"
     "{TEXT}"
