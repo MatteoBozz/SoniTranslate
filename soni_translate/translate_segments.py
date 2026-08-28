@@ -193,6 +193,43 @@ def translate_batch(segments, target, chunk_size=2000, source=None):
         segments, segments_copy, translated_lines, target, source
     )
 
+def call_ollama_generate(
+    model,
+    original_text 
+):
+    payload = json.dumps({
+        "model": model,
+        "prompt": orginal_text,
+        "stream": False,
+        "format": "json",           # equivalent of response_format json_object
+        "options": {"temperature": 0.1},
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        url, data=payload, headers={"Content-Type": "application/json"}
+    )
+
+    last_error = None
+    retries = 4
+    for attempt in range(1, retries): #retries before giving up
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            return data.get("response", "")
+        except (urllib.error.URLError, TimeoutError,
+                json.JSONDecodeError) as error:
+            last_error = error
+            if attempt == 4:
+                break
+            delay = _OLLAMA_BACKOFF * (2 ** (attempt - 1))
+            logger.warning(
+                f"/api/generate attempt {attempt}/{retries} "
+                f"failed ({error}); retrying in {delay:.1f}s"
+            )
+            time.sleep(delay)
+    raise RuntimeError(
+        f"/api/generate failed after {retries} attempts: "
+        f"{last_error}"
+    )
 
 def call_gpt_translate(
     client,
@@ -213,7 +250,6 @@ def call_gpt_translate(
         ]
     )
     result = response.choices[0].message.content
-    logger.info(f"Response: {str(response)} ---END")
     logger.debug(f"Result: {str(result)}")
 
     try:
@@ -323,13 +359,17 @@ def gpt_sequential(segments, model, target, source=None):
         time.sleep(0.5)
 
         try:
-            translated_text = call_gpt_translate(
-                client,
+            #translated_text = call_gpt_translate(
+            #    client,
+            #    model,
+            #    system_prompt,
+            #    user_prompt,
+            #)
+            call_ollama_generate(
                 model,
-                system_prompt,
-                user_prompt,
+                text
             )
-            logger.info(f"{translated_text}")
+            logger.debug(f"{translated_text}")
 
         except Exception as error:
             logger.error(
