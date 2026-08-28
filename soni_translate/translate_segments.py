@@ -199,7 +199,7 @@ def call_ollama_generate(
 ):
     payload = json.dumps({
         "model": model,
-        "prompt": orginal_text,
+        "prompt": original_text,
         "stream": False,
         "format": "json",           # equivalent of response_format json_object
         "options": {"temperature": 0.1},
