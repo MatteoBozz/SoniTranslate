@@ -195,17 +195,27 @@ def translate_batch(segments, target, chunk_size=2000, source=None):
         segments, segments_copy, translated_lines, target, source
     )
 
+_TRANSLATE_PROMPT = (
+    "You are a professional English (en) to Italian (it) translator. "
+    "Your goal is to accurately convey the meaning and nuances of the original "
+    "English text while adhering to Italian grammar, vocabulary, and cultural "
+    "sensitivities.\n"
+    "Produce only the Italian translation, without any additional explanations "
+    "or commentary. Please translate the following English text into Italian:\n\n\n"
+    "{TEXT}"
+)
+
 def call_ollama_generate(
     model,
     original_text 
 ):
     url = "http://192.168.178.210:11434/api/generate"
+    prompt = _TRANSLATE_PROMPT.replace("{TEXT}", original_text)
     payload = json.dumps({
         "model": model,
-        "prompt": original_text,
+        "prompt": prompt,
         "stream": False,
-        "format": "json",           # equivalent of response_format json_object
-        "options": {"temperature": 0.1},
+        "options": {"num_predict": 512},
     }).encode("utf-8")
     req = urllib.request.Request(
         url, data=payload, headers={"Content-Type": "application/json"}
