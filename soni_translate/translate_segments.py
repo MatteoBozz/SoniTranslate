@@ -204,6 +204,7 @@ _TRANSLATE_PROMPT = (
     "- Localize idioms, slang and cultural references to Italian equivalents.\n"
     "- Keep crude language and profanity when the original has it — do NOT soften or censor.\n"
     "- Keep it short and speakable (it has to fit the character's mouth).\n"
+    "- Avoid inserting 'Eh!' or 'Eh?' too much times in the translation, no more than one time every 20 sentences.\n"
     "Output ONLY the adapted Italian line — no notes, no alternatives, no quotes.\n"
     "\n"
     "Examples of the target style:\n"
